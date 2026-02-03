@@ -64,4 +64,16 @@ final class ItemTests: XCTestCase {
         XCTAssertEqual(inventory.countOf("health_potion"), 0)
         XCTAssertEqual(inventory.usedSlots, 0)
     }
+
+    func testInventoryRemoveMoreThanAvailable() {
+        var inventory = Inventory(maxSlots: 5)
+
+        _ = inventory.addItem("health_potion", count: 3, stackable: true)
+
+        // Trying to remove more than available should fail
+        let success = inventory.removeItem("health_potion", count: 5)
+        XCTAssertFalse(success)
+        // Item count should remain unchanged
+        XCTAssertEqual(inventory.countOf("health_potion"), 3)
+    }
 }

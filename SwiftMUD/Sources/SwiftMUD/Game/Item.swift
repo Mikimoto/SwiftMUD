@@ -83,6 +83,8 @@ struct Inventory: Codable {
         usedSlots >= maxSlots
     }
 
+    // Note: maxStack enforcement is the caller's responsibility.
+    // The caller has access to ItemTemplate and should check maxStack before calling addItem.
     mutating func addItem(_ templateId: String, count: Int = 1, stackable: Bool) -> Bool {
         if stackable, let index = items.firstIndex(where: { $0.templateId == templateId }) {
             items[index].count += count
@@ -96,6 +98,11 @@ struct Inventory: Codable {
 
     mutating func removeItem(_ templateId: String, count: Int = 1) -> Bool {
         guard let index = items.firstIndex(where: { $0.templateId == templateId }) else {
+            return false
+        }
+
+        // Fail if trying to remove more than available
+        guard items[index].count >= count else {
             return false
         }
 
