@@ -25,6 +25,10 @@ let package = Package(
             ],
             swiftSettings: [.unsafeFlags(["-parse-as-library"])]
         ),
+        .executableTarget(
+            name: "MUDClient",
+            dependencies: []
+        ),
         .testTarget(
             name: "SwiftMUDTests",
             dependencies: ["SwiftMUD"]
