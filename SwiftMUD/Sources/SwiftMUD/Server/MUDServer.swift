@@ -29,7 +29,7 @@ final class MUDServer {
                     try channel.pipeline.syncOperations.addHandler(BackPressureHandler())
                     try channel.pipeline.syncOperations.addHandler(ByteToMessageHandler(LineBasedFrameDecoder()))
                     try channel.pipeline.syncOperations.addHandler(StringCodec())
-                    // TODO: Add ClientHandler() - will be implemented in Task 10
+                    try channel.pipeline.syncOperations.addHandler(ClientHandler())
                 }
             }
             // Enable SO_REUSEADDR for the accepted Channels

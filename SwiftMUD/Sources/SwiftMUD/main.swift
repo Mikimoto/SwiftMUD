@@ -1,5 +1,5 @@
 import ArgumentParser
-import Dispatch
+import Foundation
 import Logging
 
 @main
@@ -16,12 +16,23 @@ struct SwiftMUD: ParsableCommand {
     var host: String = "0.0.0.0"
 
     func run() throws {
-        var logger = Logger(label: "com.swiftmud.server")
+        var logger = Logger(label: "com.swiftmud.main")
         logger.logLevel = .info
-        logger.info("SwiftMUD server starting on \(host):\(port)")
 
-        // TODO: Start server
-        print("SwiftMUD server placeholder - press Ctrl+C to exit")
-        dispatchMain()
+        let server = MUDServer(host: host, port: port)
+
+        // Handle SIGINT (Ctrl+C)
+        signal(SIGINT) { _ in
+            print("\nShutting down...")
+            Darwin.exit(0)
+        }
+
+        do {
+            try server.start()
+            try server.waitForClose()
+        } catch {
+            logger.error("Server error: \(error)")
+            throw error
+        }
     }
 }
