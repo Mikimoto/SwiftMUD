@@ -1,5 +1,4 @@
 import ArgumentParser
-import Foundation
 import Logging
 
 @main
@@ -21,10 +20,8 @@ struct SwiftMUD: ParsableCommand {
 
         let server = MUDServer(host: host, port: port)
 
-        // Handle SIGINT (Ctrl+C)
-        signal(SIGINT) { _ in
-            print("\nShutting down...")
-            Darwin.exit(0)
+        defer {
+            server.stop()
         }
 
         do {
