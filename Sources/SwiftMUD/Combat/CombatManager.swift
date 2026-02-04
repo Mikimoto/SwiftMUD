@@ -46,7 +46,7 @@ struct AttackResult {
 // MARK: - CombatManager
 
 /// 戰鬥管理器，負責管理所有活動戰鬥
-final class CombatManager {
+final class CombatManager: @unchecked Sendable {
     static let shared = CombatManager()
 
     private let logger = Logger(label: "CombatManager")

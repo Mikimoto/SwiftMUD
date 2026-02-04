@@ -2,7 +2,7 @@ import Foundation
 import Logging
 
 /// 商店管理器
-final class ShopManager {
+final class ShopManager: @unchecked Sendable {
     static let shared = ShopManager()
 
     /// 所有商店 (shopId -> Shop)

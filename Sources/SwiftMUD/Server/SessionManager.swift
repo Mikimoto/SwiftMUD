@@ -3,7 +3,7 @@ import NIO
 import Logging
 
 /// 管理所有活動的 Session 和玩家連線
-final class SessionManager {
+final class SessionManager: @unchecked Sendable {
     /// 單例模式
     static let shared = SessionManager()
 

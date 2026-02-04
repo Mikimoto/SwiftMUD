@@ -2,7 +2,7 @@ import Foundation
 import Logging
 
 /// 任務管理器
-final class QuestManager {
+final class QuestManager: @unchecked Sendable {
     static let shared = QuestManager()
 
     /// 所有任務定義 (questId -> Quest)

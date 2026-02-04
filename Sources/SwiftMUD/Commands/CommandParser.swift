@@ -1,7 +1,7 @@
 import Foundation
 
 /// 指令解析器 - 負責解析玩家輸入並執行對應的指令
-final class CommandParser {
+final class CommandParser: @unchecked Sendable {
     /// 單例模式
     static let shared = CommandParser()
 

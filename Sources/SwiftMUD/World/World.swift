@@ -1,7 +1,7 @@
 import Foundation
 
 /// 遊戲世界的中央狀態容器，管理所有遊戲實體
-final class World {
+final class World: @unchecked Sendable {
     // 單例模式
     static let shared = World()
 

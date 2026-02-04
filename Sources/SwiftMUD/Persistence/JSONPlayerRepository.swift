@@ -37,9 +37,9 @@ final class JSONPlayerRepository: PlayerRepository {
         try storage.save(entity, to: filePath)
 
         // 更新名稱索引
-        indexLock.lock()
-        nameIndex[entity.name.lowercased()] = entity.id
-        indexLock.unlock()
+        indexLock.withLock {
+            nameIndex[entity.name.lowercased()] = entity.id
+        }
     }
 
     func load(id: UUID) async throws -> Player? {
@@ -50,9 +50,9 @@ final class JSONPlayerRepository: PlayerRepository {
     func delete(id: UUID) async throws {
         // 先載入玩家資料以更新索引
         if let player = try await load(id: id) {
-            indexLock.lock()
-            nameIndex.removeValue(forKey: player.name.lowercased())
-            indexLock.unlock()
+            indexLock.withLock {
+                _ = nameIndex.removeValue(forKey: player.name.lowercased())
+            }
         }
 
         let filePath = Self.filePath(for: id)
@@ -76,9 +76,9 @@ final class JSONPlayerRepository: PlayerRepository {
     // MARK: - PlayerRepository Protocol
 
     func loadByName(_ name: String) async throws -> Player? {
-        indexLock.lock()
-        let playerId = nameIndex[name.lowercased()]
-        indexLock.unlock()
+        let playerId = indexLock.withLock {
+            nameIndex[name.lowercased()]
+        }
 
         guard let id = playerId else {
             return nil
