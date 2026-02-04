@@ -23,11 +23,22 @@ final class World {
     // 技能定義 (skillId -> Skill)
     private(set) var skills: [String: Skill] = [:]
 
+    // 玩家資料儲存庫（可選）
+    private(set) var playerRepository: JSONPlayerRepository?
+
     // 線程安全鎖
     private let lock = NSLock()
 
     private init() {
         loadInitialData()
+    }
+
+    /// 設定玩家資料儲存庫
+    /// - Parameter repository: 玩家資料儲存庫
+    func setPlayerRepository(_ repository: JSONPlayerRepository) {
+        lock.lock()
+        defer { lock.unlock() }
+        self.playerRepository = repository
     }
 
     // MARK: - Player Operations
@@ -42,6 +53,9 @@ final class World {
             room.playerIds.insert(player.id.uuidString)
             rooms[player.currentRoomId] = room
         }
+
+        // 儲存玩家資料到持久層
+        savePlayerInternal(player)
     }
 
     func removePlayer(_ playerId: UUID) {
@@ -63,6 +77,65 @@ final class World {
         lock.lock()
         defer { lock.unlock() }
         players[player.id] = player
+
+        // 儲存玩家資料到持久層
+        savePlayerInternal(player)
+    }
+
+    // MARK: - Player Persistence
+
+    /// 儲存玩家資料到持久層
+    /// - Parameter player: 要儲存的玩家
+    func savePlayer(_ player: Player) {
+        lock.lock()
+        defer { lock.unlock() }
+        savePlayerInternal(player)
+    }
+
+    /// 內部使用的儲存方法（不加鎖，需要在已加鎖的情況下呼叫）
+    private func savePlayerInternal(_ player: Player) {
+        guard let repository = playerRepository else { return }
+
+        do {
+            try repository.saveSync(player)
+        } catch {
+            // 記錄錯誤但不中斷遊戲流程
+            print("[World] 儲存玩家資料失敗：\(player.name) - \(error.localizedDescription)")
+        }
+    }
+
+    /// 從持久層載入玩家資料
+    /// - Parameter name: 玩家名稱
+    /// - Returns: 玩家資料，若不存在則返回 nil
+    func loadPlayerFromStorage(byName name: String) -> Player? {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard let repository = playerRepository else { return nil }
+
+        do {
+            return try repository.loadByNameSync(name)
+        } catch {
+            print("[World] 載入玩家資料失敗：\(name) - \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    /// 從持久層載入玩家資料
+    /// - Parameter id: 玩家 UUID
+    /// - Returns: 玩家資料，若不存在則返回 nil
+    func loadPlayerFromStorage(byId id: UUID) -> Player? {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard let repository = playerRepository else { return nil }
+
+        do {
+            return try repository.loadSync(id: id)
+        } catch {
+            print("[World] 載入玩家資料失敗：\(id) - \(error.localizedDescription)")
+            return nil
+        }
     }
 
     func getPlayer(byId id: UUID) -> Player? {
