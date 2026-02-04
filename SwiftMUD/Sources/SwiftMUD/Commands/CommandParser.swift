@@ -48,6 +48,12 @@ final class CommandParser {
         // 戰鬥指令
         register(AttackCommand.self)
         register(FleeCommand.self)
+
+        // 任務指令
+        register(QuestCommand.self)
+        register(AcceptCommand.self)
+        register(CompleteCommand.self)
+        register(AbandonCommand.self)
     }
 
     // MARK: - 指令註冊

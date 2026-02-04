@@ -36,6 +36,8 @@ enum SkillType: String, Codable {
 enum QuestType: String, Codable {
     case single      // 單次任務
     case repeatable  // 可重複任務
+    case daily       // 每日任務
+    case weekly      // 每週任務
     case chain       // 任務鏈
 }
 
@@ -44,9 +46,29 @@ enum QuestObjective: Codable, Equatable {
     case kill(monsterId: String, count: Int)
     case collect(itemId: String, count: Int)
     case visit(roomId: String)
-    case talk(npcId: String)
+    case talkTo(npcId: String)
+    case useItem(itemId: String, count: Int)
     case reachLevel(level: Int)
     case learnSkill(skillId: String)
+
+    var description: String {
+        switch self {
+        case .kill(let monsterId, let count):
+            return "擊殺 \(monsterId) x\(count)"
+        case .collect(let itemId, let count):
+            return "收集 \(itemId) x\(count)"
+        case .visit(let roomId):
+            return "前往 \(roomId)"
+        case .talkTo(let npcId):
+            return "與 \(npcId) 對話"
+        case .useItem(let itemId, let count):
+            return "使用 \(itemId) x\(count)"
+        case .reachLevel(let level):
+            return "達到 \(level) 級"
+        case .learnSkill(let skillId):
+            return "學習技能 \(skillId)"
+        }
+    }
 }
 
 // MARK: - 屬性類型
