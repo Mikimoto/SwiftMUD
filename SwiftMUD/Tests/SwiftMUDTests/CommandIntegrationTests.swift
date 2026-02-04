@@ -357,13 +357,14 @@ final class CommandIntegrationTests: XCTestCase {
             testPlayer = player
         }
 
-        let result = CommandParser.shared.parse("buy health_potion", session: realSession)
+        // 使用 iron_sword 因為武器店（按 ID 排序第一個）一定有這個物品
+        let result = CommandParser.shared.parse("buy iron_sword", session: realSession)
 
         switch result {
         case .success:
             // 驗證物品已購買
             if let player = World.shared.getPlayer(byId: testPlayer.id) {
-                XCTAssertGreaterThan(player.inventory.countOf("health_potion"), 0)
+                XCTAssertGreaterThan(player.inventory.countOf("iron_sword"), 0)
             }
         case .failure(let error):
             XCTFail("buy 指令失敗：\(error.localizedDescription)")

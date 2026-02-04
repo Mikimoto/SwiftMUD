@@ -133,15 +133,10 @@ final class IntegrationTests: XCTestCase {
 
         helper.setupPlayerInWorld(player, session: session)
 
-        // 驗證市場有商店
-        let shop = ShopManager.shared.getShopInRoom("market")
-        XCTAssertNotNil(shop, "市場應該有商店")
-
-        guard let shopId = shop?.id else {
-            XCTFail("無法取得商店 ID")
-            helper.cleanupPlayer(player.id)
-            return
-        }
+        // 使用雜貨店（販賣 health_potion）
+        let shopId = "general_store"
+        let shop = ShopManager.shared.getShop(shopId)
+        XCTAssertNotNil(shop, "應該有雜貨店")
 
         // 測試購買藥水
         let buyResult = ShopManager.shared.buyItem(

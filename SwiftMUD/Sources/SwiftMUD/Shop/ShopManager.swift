@@ -30,8 +30,9 @@ final class ShopManager {
         lock.lock()
         defer { lock.unlock() }
 
-        // 找到房間內的商店 NPC
-        guard let npc = npcs.values.first(where: { $0.roomId == roomId && $0.shopId != nil }),
+        // 找到房間內的商店 NPC，按 ID 排序確保結果確定
+        let sortedNpcs = npcs.values.sorted { $0.id < $1.id }
+        guard let npc = sortedNpcs.first(where: { $0.roomId == roomId && $0.shopId != nil }),
               let shopId = npc.shopId else {
             return nil
         }
