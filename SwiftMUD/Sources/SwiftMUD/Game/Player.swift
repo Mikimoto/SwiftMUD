@@ -36,9 +36,14 @@ struct Player: Codable, Identifiable {
 
     // 狀態
     var isMuted: Bool
-    var mutedUntil: Date?
+    var muteExpiry: Date?
     var isBanned: Bool
-    var bannedUntil: Date?
+    var banExpiry: Date?
+    var banReason: String?
+    var isAFK: Bool
+
+    // 職業
+    var playerClass: String
 
     // 建立新玩家
     static func create(name: String, passwordHash: String, startingRoom: String = "town_square") -> Player {
@@ -62,15 +67,24 @@ struct Player: Codable, Identifiable {
             equipment: [:],
             adminLevel: .player,
             isMuted: false,
-            mutedUntil: nil,
+            muteExpiry: nil,
             isBanned: false,
-            bannedUntil: nil
+            banExpiry: nil,
+            banReason: nil,
+            isAFK: false,
+            playerClass: "冒險者"
         )
     }
 
     // 計算升級所需經驗
     func expToNextLevel() -> Int {
         level * 100
+    }
+
+    // 經驗別名
+    var experience: Int {
+        get { exp }
+        set { exp = newValue }
     }
 
     // 是否存活

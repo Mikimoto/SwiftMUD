@@ -1,7 +1,7 @@
 import Foundation
 
 // MARK: - 管理權限層級
-enum AdminTier: Int, Codable, Comparable {
+enum AdminTier: Int, Codable, Comparable, CaseIterable {
     case player = 0      // 一般玩家
     case trainee = 1     // 見習GM
     case gm = 2          // GM

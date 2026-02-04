@@ -65,6 +65,19 @@ final class CommandParser {
         register(UseCommand.self)
         register(EquipCommand.self)
         register(UnequipCommand.self)
+
+        // 管理員指令
+        register(KickCommand.self)
+        register(BanCommand.self)
+        register(MuteCommand.self)
+        register(UnmuteCommand.self)
+        register(TeleportCommand.self)
+        register(GotoCommand.self)
+        register(SpawnCommand.self)
+        register(SetAdminCommand.self)
+        register(AdminListCommand.self)
+        register(AnnounceCommand.self)
+        register(WhoIsCommand.self)
     }
 
     // MARK: - 指令註冊

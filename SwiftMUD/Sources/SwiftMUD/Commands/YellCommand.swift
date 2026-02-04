@@ -17,9 +17,9 @@ final class YellCommand: Command {
 
         // 檢查是否被禁言
         if player.isMuted {
-            if let mutedUntil = player.mutedUntil, mutedUntil > Date() {
-                return .failure(error: .accountMuted(until: mutedUntil))
-            } else if player.mutedUntil == nil {
+            if let muteExpiry = player.muteExpiry, muteExpiry > Date() {
+                return .failure(error: .accountMuted(until: muteExpiry))
+            } else if player.muteExpiry == nil {
                 return .failure(error: .accountMuted(until: nil))
             }
         }

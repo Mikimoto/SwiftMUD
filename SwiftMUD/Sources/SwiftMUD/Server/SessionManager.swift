@@ -81,6 +81,11 @@ final class SessionManager {
         return sessions[sessionId]
     }
 
+    /// 別名方法：根據玩家 ID 取得 session
+    func getSession(byPlayerId playerId: UUID) -> Session? {
+        getSessionForPlayer(playerId)
+    }
+
     // MARK: - Player Management
 
     /// 處理玩家登入
@@ -161,6 +166,11 @@ final class SessionManager {
 
             session.send(message)
         }
+    }
+
+    /// 別名方法：全服廣播
+    func broadcast(_ message: String) {
+        broadcastGlobal(message)
     }
 
     /// 發送訊息給特定玩家

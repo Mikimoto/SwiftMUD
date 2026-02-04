@@ -23,6 +23,8 @@ enum MUDError: Error, Equatable {
     case unknownCommand(command: String)
     case missingArgument(name: String)
     case invalidArgument(name: String, value: String)
+    case invalidArguments(expected: String)
+    case custom(String)
 
     // 物品與交易
     case itemNotFound(id: String)
@@ -97,6 +99,10 @@ enum MUDError: Error, Equatable {
             return "缺少參數：\(name)"
         case .invalidArgument(let name, let value):
             return "無效的參數 \(name)：\(value)"
+        case .invalidArguments(let expected):
+            return "用法：\(expected)"
+        case .custom(let message):
+            return message
         case .itemNotFound(let id):
             return "找不到物品：\(id)"
         case .insufficientGold(let required, let has):
