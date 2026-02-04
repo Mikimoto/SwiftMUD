@@ -25,6 +25,12 @@ struct Player: Codable, Identifiable {
     // 技能 (技能ID -> 等級)
     var skills: [String: Int]
 
+    // 背包
+    var inventory: Inventory
+
+    // 裝備欄位 (slot -> itemTemplateId)
+    var equipment: [EquipmentSlot: String]
+
     // 管理權限
     var adminLevel: AdminTier
 
@@ -52,6 +58,8 @@ struct Player: Codable, Identifiable {
             baseMagic: 5,
             currentRoomId: startingRoom,
             skills: [:],
+            inventory: Inventory(maxSlots: 20),
+            equipment: [:],
             adminLevel: .player,
             isMuted: false,
             mutedUntil: nil,
@@ -101,5 +109,41 @@ struct Player: Codable, Identifiable {
         baseMagic += 1
         currentHP = maxHP
         currentMP = maxMP
+    }
+
+    /// 裝備物品
+    mutating func equip(itemId: String, slot: EquipmentSlot) -> String? {
+        let previousItem = equipment[slot]
+        equipment[slot] = itemId
+        return previousItem
+    }
+
+    /// 卸下裝備
+    mutating func unequip(slot: EquipmentSlot) -> String? {
+        let item = equipment[slot]
+        equipment[slot] = nil
+        return item
+    }
+
+    /// 計算裝備加成後的總攻擊力
+    func totalAttack() -> Int {
+        var total = baseAttack
+        for (_, itemId) in equipment {
+            if let item = World.shared.itemTemplates[itemId] {
+                total += item.statBonus[.attack] ?? 0
+            }
+        }
+        return total
+    }
+
+    /// 計算裝備加成後的總防禦力
+    func totalDefense() -> Int {
+        var total = baseDefense
+        for (_, itemId) in equipment {
+            if let item = World.shared.itemTemplates[itemId] {
+                total += item.statBonus[.defense] ?? 0
+            }
+        }
+        return total
     }
 }

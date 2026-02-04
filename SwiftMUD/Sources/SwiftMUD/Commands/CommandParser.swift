@@ -54,6 +54,17 @@ final class CommandParser {
         register(AcceptCommand.self)
         register(CompleteCommand.self)
         register(AbandonCommand.self)
+
+        // 商店指令
+        register(ShopCommand.self)
+        register(BuyCommand.self)
+        register(SellCommand.self)
+
+        // 背包與裝備指令
+        register(InventoryCommand.self)
+        register(UseCommand.self)
+        register(EquipCommand.self)
+        register(UnequipCommand.self)
     }
 
     // MARK: - 指令註冊
