@@ -2,6 +2,18 @@ import Foundation
 import Logging
 
 /// 任務管理器
+///
+/// This type is marked as `@unchecked Sendable` because it manages shared mutable
+/// state (`quests`, `playerQuests`, `completedQuests`, `questCooldowns`) that can
+/// be accessed from multiple threads / tasks. Swift's Sendable checking is
+/// bypassed, so we rely on explicit synchronization instead:
+/// - All reads and writes to the mutable dictionaries must be performed while
+///   holding `lock`.
+/// - `lock` is the sole synchronization primitive protecting this state.
+/// - The contained types (`Quest`, `QuestProgress`, etc.) are assumed to be
+///   safe to use under this coarse-grained locking model (either value types
+///   or otherwise not shared without holding `lock`).
+/// Maintaining these invariants is required to keep `QuestManager` thread-safe.
 final class QuestManager: @unchecked Sendable {
     static let shared = QuestManager()
 
