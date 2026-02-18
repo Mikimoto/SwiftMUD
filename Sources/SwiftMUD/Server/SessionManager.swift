@@ -3,7 +3,13 @@ import NIO
 import Logging
 
 /// 管理所有活動的 Session 和玩家連線
-final class SessionManager {
+///
+/// This type is marked as `@unchecked Sendable` because we manually ensure
+/// thread-safety using `NSLock`. All access to mutable shared state
+/// (`sessions` and `playerToSession`) must be performed while holding
+/// `lock`, which provides mutual exclusion and prevents data races when
+/// `SessionManager` is used from multiple concurrent tasks.
+final class SessionManager: @unchecked Sendable {
     /// 單例模式
     static let shared = SessionManager()
 

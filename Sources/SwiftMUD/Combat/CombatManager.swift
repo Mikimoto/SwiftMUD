@@ -46,7 +46,24 @@ struct AttackResult {
 // MARK: - CombatManager
 
 /// 戰鬥管理器，負責管理所有活動戰鬥
-final class CombatManager {
+///
+/// `CombatManager` is marked as `@unchecked Sendable` because it is a
+/// shared singleton that can be accessed from multiple concurrent
+/// contexts, but it uses manual synchronization instead of Swift's
+/// structured concurrency isolation.
+///
+/// Thread-safety guarantees:
+/// - All mutable shared state (`activeCombats`, `participantToCombat`)
+///   must be accessed and mutated only while holding `lock`.
+/// - `lock` (an `NSLock` instance) provides mutual exclusion so that
+///   at most one thread reads or writes the combat dictionaries at a time.
+/// - Any future properties that are mutated from multiple threads
+///   must either be immutable after initialization or protected by
+///   the same lock (or an explicitly documented alternative).
+///
+/// When modifying this class, ensure that any access to shared mutable
+/// state continues to follow the locking discipline described above.
+final class CombatManager: @unchecked Sendable {
     static let shared = CombatManager()
 
     private let logger = Logger(label: "CombatManager")

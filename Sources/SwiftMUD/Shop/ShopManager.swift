@@ -2,7 +2,15 @@ import Foundation
 import Logging
 
 /// 商店管理器
-final class ShopManager {
+///
+/// This type is marked as `@unchecked Sendable` because Swift cannot statically
+/// verify the thread-safety of its stored properties. Concurrency safety is
+/// instead guaranteed at runtime by `lock`, an `NSLock` that must be held
+/// whenever accessing or mutating shared mutable state such as `shops` and `npcs`.
+/// As long as all access to these properties goes through `ShopManager`'s
+/// methods (which correctly acquire and release `lock`), instances of this type
+/// can be safely used across concurrency domains.
+final class ShopManager: @unchecked Sendable {
     static let shared = ShopManager()
 
     /// 所有商店 (shopId -> Shop)
