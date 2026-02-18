@@ -1,6 +1,25 @@
 import Foundation
 
 /// 遊戲世界的中央狀態容器，管理所有遊戲實體
+///
+/// This type is marked as `@unchecked Sendable` because it is a process-wide
+/// singleton that may be accessed from multiple concurrent contexts. The Swift
+/// compiler cannot statically verify that all internal mutable state is properly
+/// synchronized, so we take responsibility for enforcing thread safety manually.
+///
+/// Thread-safety guarantees:
+/// - All mutable shared state stored in `World` (`players`, `rooms`, `monsters`,
+///   `itemTemplates`, `monsterTemplates`, `skills`, and `playerRepository`) is
+///   always read and written while holding the private `lock` (`NSLock`).
+/// - The `lock` is private to `World` and never exposed, so external callers
+///   cannot bypass the synchronization guarantees.
+/// - No stored properties reference non-Sendable values that are shared outside
+///   of `World` without going through the same locking scheme.
+///
+/// If you add new mutable state to `World`, you must ensure it is always
+/// accessed (both reads and writes) while holding `lock`, or otherwise provide
+/// equivalent synchronization, to keep the `@unchecked Sendable` annotation
+/// sound.
 final class World: @unchecked Sendable {
     // 單例模式
     static let shared = World()
