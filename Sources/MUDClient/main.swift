@@ -19,13 +19,22 @@ class MUDClient {
 
     func connect() throws {
         // 建立 socket
+        #if canImport(Darwin)
         socket = Darwin.socket(AF_INET, SOCK_STREAM, 0)
+        #elseif canImport(Glibc)
+        socket = Glibc.socket(AF_INET, SOCK_STREAM, 0)
+        #else
+        fatalError("Unsupported platform")
+        #endif
         guard socket >= 0 else {
             throw ClientError.socketCreationFailed
         }
 
         // 解析主機位址
         var serverAddr = sockaddr_in()
+        #if canImport(Darwin)
+        serverAddr.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        #endif
         serverAddr.sin_family = sa_family_t(AF_INET)
         serverAddr.sin_port = port.bigEndian
 
@@ -38,7 +47,13 @@ class MUDClient {
         // 連線
         let connectResult = withUnsafePointer(to: &serverAddr) { ptr in
             ptr.withMemoryRebound(to: sockaddr.self, capacity: 1) { sockaddrPtr in
-                Darwin.connect(socket, sockaddrPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
+                #if canImport(Darwin)
+                return Darwin.connect(socket, sockaddrPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
+                #elseif canImport(Glibc)
+                return Glibc.connect(socket, sockaddrPtr, socklen_t(MemoryLayout<sockaddr_in>.size))
+                #else
+                fatalError("Unsupported platform")
+                #endif
             }
         }
 
