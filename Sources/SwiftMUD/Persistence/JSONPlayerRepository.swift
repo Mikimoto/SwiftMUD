@@ -51,7 +51,7 @@ final class JSONPlayerRepository: PlayerRepository {
         // 先載入玩家資料以更新索引
         if let player = try await load(id: id) {
             indexLock.withLock {
-                _ = nameIndex.removeValue(forKey: player.name.lowercased())
+                nameIndex.removeValue(forKey: player.name.lowercased())
             }
         }
 
